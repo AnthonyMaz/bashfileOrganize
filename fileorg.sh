@@ -38,6 +38,10 @@ CMPSDFILES=$( (find . -iname '*.tar' -o -iname '*.gz' -o -iname '*.xz' -o -iname
 ### Anything without *.*
 FWOEXT=$( (find . -type f ! -name "*.*") > fwoext.txt )
 
+### Straggler files. Anything else left
+### in my case it's any files left in the recovered directories.
+STRAGS=$( (find ./recup* -type f -iname "*.*") > strags.txt)
+
 $(mkdir txtanddocs)
  	while read LINE; do
 		mv -v ${LINE} ./txtanddocs
@@ -76,7 +80,11 @@ $(mkdir fileswithoutExt)
 	while read LINE; do
 		mv -v ${LINE} ./fileswithoutExt
 	done < ./fwoext.txt
+$(mkdir remainingFiles)
+	while read LINE; do
+		mv -v ${LINE} ./remainingFiles
+	done < ./strags.txt
 
 
-$(rm -v images.txt txtanddocs.txt audio.txt audproj.txt videos.txt dbfiles.txt prgfiles.txt cmpsdfiles.txt) 
+$(rm -v images.txt txtanddocs.txt audio.txt audproj.txt videos.txt dbfiles.txt prgfiles.txt cmpsdfiles.txt fwoext.txt strags.txt) 
 
