@@ -40,7 +40,7 @@ FWOEXT=$( (find . -type f ! -name "*.*") > fwoext.txt )
 
 ### Straggler files. Anything else left
 ### in my case it's any files left in the recovered directories.
-STRAGS=$( (find ./recup* -type f -iname "*.*") > strags.txt)
+STRAGS=$( (find . -type f -iname "*.*") > strags.txt)
 
 $(mkdir txtanddocs)
  	while read LINE; do
