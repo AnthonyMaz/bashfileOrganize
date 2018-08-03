@@ -6,6 +6,9 @@
 ### .CSV,.DAT,.DOC,.DOCX,.GED,.KEY,.KEYCHAIN,.LOG,.MSG,.ODT,.PAGES,.PDF,.PLIST,.PPS,.PPT,.PPTX,.RTF,.SDF,.TEX,.TXT,.VCF,.WPD,.WPS,.XLS,.XLSX,.XML,.F,.TTF,.ICS,.MDL,.ODS,.SNT,.LIT
 TXTANDDOCS=$( (find . -iname '*.CSV' -o -iname '*.DAT' -o -iname '*.DOC' -o -iname '*.DOCX' -o -iname '*.GED' -o -iname '*.KEY' -o -iname '*.KEYCHAIN' -o -iname '*.LOG' -o -iname '*.MSG' -o -iname '*.ODT' -o -iname '*.PAGES' -o -iname '*.PDF' -o -iname '*.PLIST' -o -iname '*.PPS' -o -iname '*.PPT' -o -iname '*.PPTX' -o -iname '*.RTF' -o -iname '*.SDF' -o -iname '*.TEX' -o -iname '*.TXT' -o -iname '*.VCF' -o -iname '*.WPD' -o -iname '*.WPS' -o -iname '*.XLS' -o -iname '*.XLSX' -o -iname '*.XML' -o -iname '*.F' -o -iname '*.TTF' -o -iname '*.ICS' -o -iname '*.mdl' -o -iname '*.ODS' -o -iname '*.SNT' -o -iname '*.LIT')> txtanddocs.txt )
 
+$(sed -i '/txtanddocs.txt/d' ./txtanddocs.txt)
+$(sed -i '/fwoext.txt/d' ./txtanddocs.txt)
+
 ### Image File Types:
 ### Adobe Photoshop - (.PSD),GIMP - (.XCF), Adobe Illustrator - (.AI), CorelDRAW - (.CDR) (.tif, .tiff),(.bmp),(.jpg, .jpeg),(.gif),(.png),(.eps),RAW Image Files (.raw, .cr2, .nef, .orf, .sr2, .svg), .ico, .psd,### .fits, .jp*, .emf, .ds, .xmp
 IMAGES=$( (find . -iname '*.jpg' -o -iname '*.png' -o -iname '*.jpeg' -o -iname '*.gif' -o -iname '*.giff' -o -iname '*.tiff' -o -iname '*.tif' -o -iname '*.xfc' -o -iname '*.ai' -o -iname '*.cdr' -o -iname '*.eps' -o -iname '*.raw' -o -iname '*.cr2' -o -iname '*.nef' -o -iname '*.orf' -o -iname '*.sr2' -o -iname '*.svg' -o -iname '*.bmp' -o -iname '*.ico' -o -iname '*.psd' -o -iname '*.fits' -o -iname '*.jp*' -o -iname '*.emf' -o -iname '*.ds' -o -iname '*.xmp')> images.txt )
@@ -36,11 +39,7 @@ CMPSDFILES=$( (find . -iname '*.tar' -o -iname '*.gz' -o -iname '*.xz' -o -iname
 
 ### Files without extensions
 ### Anything without *.*
-FWOEXT=$( (find . -type f ! -name "*.*") > fwoext.txt )
-
-### Straggler files. Anything else left
-### in my case it's any files left in the recovered directories.
-STRAGS=$( (find . -type f -iname "*.*") > strags.txt)
+FWOEXT=$( (find . -type f ! -name '*.*') > fwoext.txt )
 
 $(mkdir txtanddocs)
  	while read LINE; do
@@ -72,19 +71,35 @@ $(mkdir prgfiles)
 	while read LINE; do
 		mv -v ${LINE} ./prgfiles
 	done < ./prgfiles.txt
-$(mkdir cmpsdfiles)
+
+$(sed -i '/fileorg.sh/d' ./prgfiles.txt)
+
+$(mkdir zippedfiles)
 	while read LINE; do
-		mv -v ${LINE} ./cmpsdfiles
+		mv -v ${LINE} ./zippedfiles
 	done < ./cmpsdfiles.txt
 $(mkdir fileswithoutExt)
 	while read LINE; do
 		mv -v ${LINE} ./fileswithoutExt
 	done < ./fwoext.txt
+
+$(rm -v images.txt txtanddocs.txt audio.txt audproj.txt videos.txt dbfiles.txt prgfiles.txt cmpsdfiles.txt fwoext.txt) 
+
+### Straggler files. Anything else left in the main directory
+## Remove maxdepth to recurse
+#STRAGS=$( (find . -maxdepth 1 -type f -iname '*.*' -o -name ! 'strags.txt' -type d \( -path txtanddocs -o -path images -o -path audio -o -path audproj -o -path videos -o -path dbfiles -o -path #prgfiles -o -path zippedfiles -o -path fileswithoutExt \) -prune ) > strags.txt)
+
+### Straggler files. Anything else left.
+STRAGS=$( (find . -type f -iname '*.*' | grep -Ev '(./txtanddocs/*|./images/*|./audio|./audproj/*|./videos/*|./dbfiles/*|./prgfiles/*|./zippedfiles/*|./fileswithoutExt/*|./remainingFiles/*)' ) > strags.txt)
+
+$(sed -i '/strags.txt/d' ./strags.txt)
+
 $(mkdir remainingFiles)
 	while read LINE; do
 		mv -v ${LINE} ./remainingFiles
 	done < ./strags.txt
 
+$(rm -v strags.txt) 
 
-$(rm -v images.txt txtanddocs.txt audio.txt audproj.txt videos.txt dbfiles.txt prgfiles.txt cmpsdfiles.txt fwoext.txt strags.txt) 
+
 
